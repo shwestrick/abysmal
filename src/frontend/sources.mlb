@@ -3,10 +3,12 @@ local
   smlfmt/src/base/sources.mlb
   smlfmt/src/lex/sources.mlb
   smlfmt/src/ast/sources.mlb
+  smlfmt/src/syntax-highlighting/sources.mlb
   local
     smlfmt/src/parse/sources.mlb
   in
     structure SMLFmtParser = Parser
+    structure InfixDict
   end
   smlfmt/src/lex-mlb/sources.mlb
   smlfmt/src/parse-mlb/sources.mlb
@@ -33,4 +35,8 @@ in
   structure FilePath
   structure Source
   structure Ast
+  structure Error
+  structure ExnHistory
+  structure TerminalColorString
+  structure SyntaxHighlighter
 end

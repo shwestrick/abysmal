@@ -599,8 +599,7 @@ struct
     * DecRef.
     *)
   datatype program = Program of
-    { id: node_id
-    , bases: {name: string, id: node_id, basdec: Mlb.basdec} Seq.t
+    { bases: {name: string, id: node_id, basdec: Mlb.basdec} Seq.t
     , main: Mlb.basdec
     }
 

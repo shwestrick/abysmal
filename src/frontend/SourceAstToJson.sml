@@ -625,10 +625,9 @@ struct
 
   (* ===== Program / top-level ===== *)
 
-  fun json_program (SourceAst.Program {id, bases, main}) =
+  fun json_program (SourceAst.Program {bases, main}) =
     jobj
-      [ ("id", json_id id)
-      , ("bases", jseq (fn {name, id, basdec} =>
+      [ ("bases", jseq (fn {name, id, basdec} =>
           jobj
             [ ("name", jstr name)
             , ("id", json_id id)

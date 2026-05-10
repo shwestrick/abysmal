@@ -223,7 +223,6 @@ struct
 
       val MLBAst.Ast top_basdec = top_ast
       val (_, main) = convert_basdec top_src InfixDict.empty top_basdec
-      val program_id = fresh_node top_src
       val bases_seq = Seq.fromList (List.rev (!bases_acc))
       val prov_list = !prov_entries
 
@@ -235,8 +234,7 @@ struct
             raise Fail ("no provenance for node " ^ NodeID.toString id)
     in
       ( SourceAst.Mlb (SourceAst.Program
-          { id = program_id
-          , bases = bases_seq
+          { bases = bases_seq
           , main = main
           })
       , lookup

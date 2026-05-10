@@ -45,11 +45,7 @@ struct
     | LabEqPat of {id: node_id, lab: string, pat: pat}
 
     | LabAsPat of
-        { id: node_id
-        , name: string
-        , ty: Ty.t option
-        , aspat: pat option
-        }
+        {id: node_id, name: string, ty: Ty.t option, aspat: pat option}
 
 
     and pat =
@@ -82,12 +78,7 @@ struct
 
     (** [op] vid [:ty] as pat *)
     | Layered of
-        { id: node_id
-        , has_op: bool
-        , name: string
-        , ty: Ty.t option
-        , pat: pat
-        }
+        {id: node_id, has_op: bool, name: string, ty: Ty.t option, pat: pat}
 
     (** pat | pat | ... | pat  (SuccessorML) *)
     | Or of {id: node_id, elems: pat Seq.t}
@@ -104,31 +95,21 @@ struct
 
     (** tyvarseq tycon = ty [and ...] *)
     type typbind =
-      { elems: {tyvars: string Seq.t, tycon: string, ty: Ty.t} Seq.t }
+      {elems: {tyvars: string Seq.t, tycon: string, ty: Ty.t} Seq.t}
 
     (** tyvarseq tycon = conbind [and ...] *)
     type datbind =
-      { elems:
-          { tyvars: string Seq.t
-          , tycon: string
-          , elems: {has_op: bool, name: string, arg: Ty.t option} Seq.t
-          } Seq.t
-      }
+      {elems:
+         { tyvars: string Seq.t
+         , tycon: string
+         , elems: {has_op: bool, name: string, arg: Ty.t option} Seq.t
+         } Seq.t}
 
     datatype exbind =
-      ExnNew of
-        { id: node_id
-        , has_op: bool
-        , name: string
-        , arg: Ty.t option
-        }
+      ExnNew of {id: node_id, has_op: bool, name: string, arg: Ty.t option}
 
     | ExnReplicate of
-        { id: node_id
-        , has_op: bool
-        , left_name: string
-        , right_name: longid
-        }
+        {id: node_id, has_op: bool, left_name: string, right_name: longid}
 
 
     datatype 'exp row_exp =
@@ -138,37 +119,17 @@ struct
 
     datatype fname_args =
       PrefixedFun of
-        { id: node_id
-        , has_op: bool
-        , name: string
-        , args: Pat.t Seq.t
-        }
+        {id: node_id, has_op: bool, name: string, args: Pat.t Seq.t}
 
-    | InfixedFun of
-        { id: node_id
-        , larg: Pat.t
-        , name: string
-        , rarg: Pat.t
-        }
+    | InfixedFun of {id: node_id, larg: Pat.t, name: string, rarg: Pat.t}
 
     | CurriedInfixedFun of
-        { id: node_id
-        , larg: Pat.t
-        , name: string
-        , rarg: Pat.t
-        , args: Pat.t Seq.t
-        }
+        {id: node_id, larg: Pat.t, name: string, rarg: Pat.t, args: Pat.t Seq.t}
 
 
     type 'exp fvalbind =
-      { elems:
-          { elems:
-              { fname_args: fname_args
-              , ty: Ty.t option
-              , exp: 'exp
-              } Seq.t
-          } Seq.t
-      }
+      {elems:
+         {elems: {fname_args: fname_args, ty: Ty.t option, exp: 'exp} Seq.t} Seq.t}
 
 
     datatype exp =
@@ -214,11 +175,7 @@ struct
     | Orelse of {id: node_id, left: exp, right: exp}
 
     (** exp handle pat => exp [| ...] *)
-    | Handle of
-        { id: node_id
-        , exp: exp
-        , elems: {pat: Pat.t, exp: exp} Seq.t
-        }
+    | Handle of {id: node_id, exp: exp, elems: {pat: Pat.t, exp: exp} Seq.t}
 
     (** raise exp *)
     | Raise of {id: node_id, exp: exp}
@@ -230,21 +187,13 @@ struct
     | While of {id: node_id, exp1: exp, exp2: exp}
 
     (** case exp of pat => exp [| ...] *)
-    | Case of
-        { id: node_id
-        , exp: exp
-        , elems: {pat: Pat.t, exp: exp} Seq.t
-        }
+    | Case of {id: node_id, exp: exp, elems: {pat: Pat.t, exp: exp} Seq.t}
 
     (** fn pat => exp [| ...] *)
     | Fn of {id: node_id, elems: {pat: Pat.t, exp: exp} Seq.t}
 
     (** _prim, _import, etc. *)
-    | MLtonSpecific of
-        { id: node_id
-        , directive: string
-        , contents: string Seq.t
-        }
+    | MLtonSpecific of {id: node_id, directive: string, contents: string Seq.t}
 
 
     and dec =
@@ -258,36 +207,21 @@ struct
         }
 
     (** fun tyvarseq fname_args [: ty] = exp [| ...] [and ...] *)
-    | DecFun of
-        { id: node_id
-        , tyvars: string Seq.t
-        , fvalbind: exp fvalbind
-        }
+    | DecFun of {id: node_id, tyvars: string Seq.t, fvalbind: exp fvalbind}
 
     (** type tyvarseq tycon = ty [and ...] *)
     | DecType of {id: node_id, typbind: typbind}
 
     (** datatype datbind [withtype typbind] *)
-    | DecDatatype of
-        { id: node_id
-        , datbind: datbind
-        , withtypee: typbind option
-        }
+    | DecDatatype of {id: node_id, datbind: datbind, withtypee: typbind option}
 
     (** datatype tycon = datatype longtycon *)
     | DecReplicateDatatype of
-        { id: node_id
-        , left_name: string
-        , right_name: longid
-        }
+        {id: node_id, left_name: string, right_name: longid}
 
     (** abstype datbind [withtype typbind] with dec end *)
     | DecAbstype of
-        { id: node_id
-        , datbind: datbind
-        , withtypee: typbind option
-        , dec: dec
-        }
+        {id: node_id, datbind: datbind, withtypee: typbind option, dec: dec}
 
     (** exception exbind [and ...] *)
     | DecException of {id: node_id, elems: exbind Seq.t}
@@ -326,24 +260,16 @@ struct
       EmptySpec
 
     (** val vid : ty [and ...] *)
-    | Val of
-        { id: node_id
-        , elems: {name: string, ty: Ty.t} Seq.t
-        }
+    | Val of {id: node_id, elems: {name: string, ty: Ty.t} Seq.t}
 
     (** type tyvarseq tycon [and ...] *)
-    | Type of
-        { id: node_id
-        , elems: {tyvars: string Seq.t, tycon: string} Seq.t
-        }
+    | Type of {id: node_id, elems: {tyvars: string Seq.t, tycon: string} Seq.t}
 
     | TypeAbbreviation of {id: node_id, typbind: typbind}
 
     (** eqtype tyvarseq tycon [and ...] *)
     | Eqtype of
-        { id: node_id
-        , elems: {tyvars: string Seq.t, tycon: string} Seq.t
-        }
+        {id: node_id, elems: {tyvars: string Seq.t, tycon: string} Seq.t}
 
     (** datatype tyvarseq tycon = condesc [and ...] *)
     | Datatype of
@@ -356,23 +282,13 @@ struct
         }
 
     (** datatype tycon = datatype longtycon *)
-    | ReplicateDatatype of
-        { id: node_id
-        , left_id: string
-        , right_id: longid
-        }
+    | ReplicateDatatype of {id: node_id, left_id: string, right_id: longid}
 
     (** exception vid [of ty] [and ...] *)
-    | Exception of
-        { id: node_id
-        , elems: {name: string, arg: Ty.t option} Seq.t
-        }
+    | Exception of {id: node_id, elems: {name: string, arg: Ty.t option} Seq.t}
 
     (** structure strid : sigexp [and ...] *)
-    | Structure of
-        { id: node_id
-        , elems: {name: string, sigexp: sigexp} Seq.t
-        }
+    | Structure of {id: node_id, elems: {name: string, sigexp: sigexp} Seq.t}
 
     (** include sigexp *)
     | Include of {id: node_id, sigexp: sigexp}
@@ -381,18 +297,10 @@ struct
     | IncludeIds of {id: node_id, names: string Seq.t}
 
     (** spec sharing type longtycon = ... = longtycon *)
-    | SharingType of
-        { id: node_id
-        , spec: spec
-        , elems: longid Seq.t
-        }
+    | SharingType of {id: node_id, spec: spec, elems: longid Seq.t}
 
     (** spec sharing longstrid = ... = longstrid *)
-    | Sharing of
-        { id: node_id
-        , spec: spec
-        , elems: longid Seq.t
-        }
+    | Sharing of {id: node_id, spec: spec, elems: longid Seq.t}
 
     (** spec [; spec ...] *)
     | Multiple of {id: node_id, elems: spec Seq.t}
@@ -408,19 +316,12 @@ struct
     | WhereType of
         { id: node_id
         , sigexp: sigexp
-        , elems:
-            { tyvars: string Seq.t
-            , tycon: longid
-            , ty: Ty.t
-            } Seq.t
+        , elems: {tyvars: string Seq.t, tycon: longid, ty: Ty.t} Seq.t
         }
 
 
     and sigdec =
-      Signature of
-        { id: node_id
-        , elems: {name: string, sigexp: sigexp} Seq.t
-        }
+      Signature of {id: node_id, elems: {name: string, sigexp: sigexp} Seq.t}
 
   end
 
@@ -439,11 +340,7 @@ struct
 
     (** strexp [: | :>] sigexp  (is_opaque distinguishes : from :>) *)
     | Constraint of
-        { id: node_id
-        , strexp: strexp
-        , is_opaque: bool
-        , sigexp: Sig.sigexp
-        }
+        {id: node_id, strexp: strexp, is_opaque: bool, sigexp: Sig.sigexp}
 
     (** funid ( strexp ) *)
     | FunAppExp of {id: node_id, funid: string, strexp: strexp}
@@ -478,12 +375,7 @@ struct
 
     (** _overload prec name : ty as longvid [and ...] *)
     | MLtonOverload of
-        { id: node_id
-        , prec: string
-        , name: string
-        , ty: Ty.t
-        , elems: longid Seq.t
-        }
+        {id: node_id, prec: string, name: string, ty: Ty.t, elems: longid Seq.t}
 
   end
 
@@ -553,10 +445,7 @@ struct
     | DecSml of {id: node_id, sml: sml_ast}
 
     (** basis basid = basexp [and ...] *)
-    | DecBasis of
-        { id: node_id
-        , elems: {name: string, basexp: basexp} Seq.t
-        }
+    | DecBasis of {id: node_id, elems: {name: string, basexp: basexp} Seq.t}
 
     (** local basdec in basdec end *)
     | DecLocalInEnd of {id: node_id, basdec1: basdec, basdec2: basdec}
@@ -566,28 +455,18 @@ struct
 
     (** structure strid [= strid] [and ...] *)
     | DecStructure of
-        { id: node_id
-        , elems: {name: string, alias: string option} Seq.t
-        }
+        {id: node_id, elems: {name: string, alias: string option} Seq.t}
 
     (** signature sigid [= sigid] [and ...] *)
     | DecSignature of
-        { id: node_id
-        , elems: {name: string, alias: string option} Seq.t
-        }
+        {id: node_id, elems: {name: string, alias: string option} Seq.t}
 
     (** functor funid [= funid] [and ...] *)
     | DecFunctor of
-        { id: node_id
-        , elems: {name: string, alias: string option} Seq.t
-        }
+        {id: node_id, elems: {name: string, alias: string option} Seq.t}
 
     (** ann "..." in basdec end *)
-    | DecAnn of
-        { id: node_id
-        , annotations: string Seq.t
-        , basdec: basdec
-        }
+    | DecAnn of {id: node_id, annotations: string Seq.t, basdec: basdec}
 
     | DecUnderscorePrim of node_id
 
@@ -598,15 +477,18 @@ struct
     * basdec (the entry-point .mlb), which may reference names in `bases` via
     * DecRef.
     *)
-  datatype program = Program of
-    { bases: {name: string, id: node_id, basdec: Mlb.basdec} Seq.t
-    , main: Mlb.basdec
-    }
+  datatype program =
+    Program of
+      { bases: {name: string, id: node_id, basdec: Mlb.basdec} Seq.t
+      , main: Mlb.basdec
+      }
 
 
   (** =========================================================================
     * Unified entry point.
     *)
-  datatype t = Sml of sml_ast | Mlb of program
+  datatype t =
+    Sml of sml_ast
+  | Mlb of program
 
 end

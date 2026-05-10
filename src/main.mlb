@@ -1,4 +1,5 @@
 $(SML_LIB)/basis/basis.mlb
 $(SML_LIB)/basis/mlton.mlb
+util/sources.mlb
 frontend/sources.mlb
 main.sml

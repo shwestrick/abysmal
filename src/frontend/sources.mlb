@@ -9,8 +9,16 @@ local
     structure SMLFmtParser = Parser
   end
   smlfmt/src/parse-mlb/sources.mlb
+
+  local
+    ../util/sources.mlb
+  in
+    structure NodeID
+  end
+  SourceAst.sml
   Parser.sml
 in
+  structure SourceAst
   structure Parser
   structure MLBAst
   structure CommandLineArgs

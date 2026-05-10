@@ -3,6 +3,9 @@ COMPILER ?= mlton
 SOURCES = \
   src/main.mlb \
   src/main.sml \
+  src/util/NodeID.sml \
+  src/util/sources.mlb \
+  src/frontend/SourceAst.sml \
   src/frontend/Parser.sml \
   src/frontend/sources.mlb
 

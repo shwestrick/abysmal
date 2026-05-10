@@ -22,19 +22,23 @@ local
   ../provenance/ProvenanceEvent.sml
   irs/source/SourceAst.sml
   irs/after-record-unification/AfterRecordUnification.sml
+  irs/after-boolean-elaboration/AfterBooleanElaboration.sml
   irs/source/SourceAstToJson.sml
   translations/to-source/Parser.sml
   translations/to-source/ToSourceAstSML.sml
   translations/to-source/ToSourceAst.sml
   translations/record-unification/RecordUnification.sml
+  translations/boolean-elaboration/BooleanElaboration.sml
 in
   structure ProvenanceEvent
   structure SourceAst
   structure AfterRecordUnification
+  structure AfterBooleanElaboration
   structure Parser
   structure ToSourceAstSML
   structure ToSourceAst
   structure RecordUnification
+  structure BooleanElaboration
   structure SourceAstToJson
   structure MLBAst
   structure CommandLineArgs

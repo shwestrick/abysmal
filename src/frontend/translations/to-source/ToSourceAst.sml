@@ -13,14 +13,12 @@ struct
         ref []
       val visited: (FilePath.t * (string * InfixDict.t)) list ref = ref []
 
+      fun emit (id, p) =
+        prov_entries := (id, p) :: !prov_entries
+
       fun fresh_node (src: Source.t) : NodeID.t =
-        let
-          val id = NodeID.fresh ()
-        in
-          prov_entries
-          :=
-          (id, ProvenanceEvent.Parsed {id = id, source = src}) :: !prov_entries;
-          id
+        let val id = NodeID.fresh ()
+        in emit (id, ProvenanceEvent.Parsed {id = id, source = src}); id
         end
 
       fun resolve_path (mlb_src: Source.t) (rel: FilePath.t) : FilePath.t =

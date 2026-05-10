@@ -15,24 +15,22 @@ val source =
     ; OS.Process.exit OS.Process.failure
     )
 
-val _ =
+val source_ast =
   case OS.Path.ext inputfile of
-    SOME "sml" =>
-      let val _ = Parser.parse_sml source
-      in print ("parsed SML: " ^ inputfile ^ "\n")
-      end
+    SOME "mlb" =>
+      #1 (ToSourceAst.to_source_ast_mlb source (Parser.parse_mlb source))
+  | SOME "sml" =>
+      ( TextIO.output (TextIO.stdErr, "error: SML-only input not yet supported\n")
+      ; OS.Process.exit OS.Process.failure
+      )
   | SOME "sig" =>
-      let val _ = Parser.parse_sml source
-      in print ("parsed SML: " ^ inputfile ^ "\n")
-      end
+      ( TextIO.output (TextIO.stdErr, "error: SML-only input not yet supported\n")
+      ; OS.Process.exit OS.Process.failure
+      )
   | SOME "fun" =>
-      let val _ = Parser.parse_sml source
-      in print ("parsed SML: " ^ inputfile ^ "\n")
-      end
-  | SOME "mlb" =>
-      let val _ = Parser.parse_mlb source
-      in print ("parsed MLB: " ^ inputfile ^ "\n")
-      end
+      ( TextIO.output (TextIO.stdErr, "error: SML-only input not yet supported\n")
+      ; OS.Process.exit OS.Process.failure
+      )
   | _ =>
       ( TextIO.output
           ( TextIO.stdErr
@@ -40,3 +38,5 @@ val _ =
           )
       ; OS.Process.exit OS.Process.failure
       )
+
+val _ = print (SourceAstToJson.to_json source_ast ^ "\n")

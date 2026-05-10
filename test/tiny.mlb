@@ -1,0 +1,7 @@
+hello.mlb
+hello.sml
+local
+  hello.mlb
+in
+  structure H = Hello
+end

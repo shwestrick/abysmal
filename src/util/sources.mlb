@@ -1,6 +1,8 @@
 local
   $(SML_LIB)/basis/basis.mlb
   NodeID.sml
+  UniqueName.sml
 in
   structure NodeID
+  structure UniqueName
 end

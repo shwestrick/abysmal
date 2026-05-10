@@ -8,18 +8,24 @@ local
   in
     structure SMLFmtParser = Parser
   end
+  smlfmt/src/lex-mlb/sources.mlb
   smlfmt/src/parse-mlb/sources.mlb
 
   local
     ../util/sources.mlb
   in
     structure NodeID
+    structure UniqueName
   end
   SourceAst.sml
   Parser.sml
+  ToSourceAst.sml
+  SourceAstToJson.sml
 in
   structure SourceAst
   structure Parser
+  structure ToSourceAst
+  structure SourceAstToJson
   structure MLBAst
   structure CommandLineArgs
   structure FilePath

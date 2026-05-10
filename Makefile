@@ -8,6 +8,7 @@ SOURCES = \
   src/util/sources.mlb \
   src/frontend/SourceAst.sml \
   src/frontend/Parser.sml \
+  src/frontend/ToSourceAstSML.sml \
   src/frontend/ToSourceAst.sml \
   src/frontend/SourceAstToJson.sml \
   src/frontend/sources.mlb

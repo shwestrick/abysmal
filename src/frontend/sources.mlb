@@ -19,11 +19,13 @@ local
   end
   SourceAst.sml
   Parser.sml
+  ToSourceAstSML.sml
   ToSourceAst.sml
   SourceAstToJson.sml
 in
   structure SourceAst
   structure Parser
+  structure ToSourceAstSML
   structure ToSourceAst
   structure SourceAstToJson
   structure MLBAst

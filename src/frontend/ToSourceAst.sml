@@ -71,14 +71,10 @@ struct
         | MLBAst.DecPathSML {path, token = _} =>
             let
               val sml_src = Source.loadFromFile (resolve_path mlb_src path)
+              val sml = ToSourceAstSML.convert fresh_node sml_src
+                  (Parser.parse_sml sml_src)
             in
-              SourceAst.Mlb.DecSml
-                { id = fresh_node sml_src
-                , sml = SourceAst.SmlAst
-                    { id = fresh_node sml_src
-                    , topdecs = Seq.empty ()  (* TODO: PARSE SML FILES *)
-                    }
-                }
+              SourceAst.Mlb.DecSml {id = fresh_node sml_src, sml = sml}
             end
 
         | MLBAst.DecPathMLB {path, token = _} =>

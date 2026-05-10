@@ -6,11 +6,11 @@ end =
 struct
   val allows = AstAllows.make
     { topExp = true
-    , optBar = false
-    , recordPun = false
-    , orPat = false
-    , extendedText = false
-    , sigWithtype = false
+    , optBar = true
+    , recordPun = true
+    , orPat = true
+    , extendedText = true
+    , sigWithtype = true
     }
 
   fun parse_sml src =

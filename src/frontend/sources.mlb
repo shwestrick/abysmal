@@ -19,13 +19,15 @@ local
     structure NodeID
     structure UniqueName
   end
-  SourceAst.sml
-  Parser.sml
-  ToSourceAstSML.sml
-  ToSourceAst.sml
-  SourceAstToJson.sml
+  irs/source/SourceAst.sml
+  irs/after-record-unification/AfterRecordUnification.sml
+  irs/source/SourceAstToJson.sml
+  translations/to-source/Parser.sml
+  translations/to-source/ToSourceAstSML.sml
+  translations/to-source/ToSourceAst.sml
 in
   structure SourceAst
+  structure AfterRecordUnification
   structure Parser
   structure ToSourceAstSML
   structure ToSourceAst

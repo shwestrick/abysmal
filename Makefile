@@ -6,11 +6,12 @@ SOURCES = \
   src/util/NodeID.sml \
   src/util/UniqueName.sml \
   src/util/sources.mlb \
-  src/frontend/SourceAst.sml \
-  src/frontend/Parser.sml \
-  src/frontend/ToSourceAstSML.sml \
-  src/frontend/ToSourceAst.sml \
-  src/frontend/SourceAstToJson.sml \
+  src/frontend/irs/source/SourceAst.sml \
+  src/frontend/irs/source/SourceAstToJson.sml \
+  src/frontend/irs/after-record-unification/AfterRecordUnification.sml \
+  src/frontend/translations/to-source/Parser.sml \
+  src/frontend/translations/to-source/ToSourceAstSML.sml \
+  src/frontend/translations/to-source/ToSourceAst.sml \
   src/frontend/sources.mlb
 
 build/bin/abysmal: $(SOURCES)

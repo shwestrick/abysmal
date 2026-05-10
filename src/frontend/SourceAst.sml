@@ -546,11 +546,11 @@ struct
     (** basdec [;] basdec *)
     | DecMultiple of {id: node_id, elems: basdec Seq.t}
 
-    (** path/to/file.mlb *)
-    (* | DecPathMLB of {id: node_id, path: string} *)
+    (** reference to a named top-level basis (replaces path/to/file.mlb) *)
+    | DecRef of {id: node_id, name: string}
 
-    (** path/to/file.{sml,sig,fun} *)
-    (* | DecPathSML of {id: node_id, path: string} *)
+    (** inline SML source (replaces path/to/file.{sml,sig,fun}) *)
+    | DecSml of {id: node_id, sml: sml_ast}
 
     (** basis basid = basexp [and ...] *)
     | DecBasis of
@@ -593,12 +593,21 @@ struct
 
   end
 
-  datatype mlb_ast = MlbAst of {id: node_id, basdec: Mlb.basdec}
+  (** Each unique .mlb file becomes one named entry in `bases`, topo-sorted so
+    * every basis only references names declared before it. `main` is the root
+    * basdec (the entry-point .mlb), which may reference names in `bases` via
+    * DecRef.
+    *)
+  datatype program = Program of
+    { id: node_id
+    , bases: {name: string, id: node_id, basdec: Mlb.basdec} Seq.t
+    , main: Mlb.basdec
+    }
 
 
   (** =========================================================================
     * Unified entry point.
     *)
-  datatype t = Sml of sml_ast | Mlb of mlb_ast
+  datatype t = Sml of sml_ast | Mlb of program
 
 end

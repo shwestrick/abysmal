@@ -1,0 +1,20 @@
+local
+  $(SML_LIB)/basis/basis.mlb
+  smlfmt/src/base/sources.mlb
+  smlfmt/src/lex/sources.mlb
+  smlfmt/src/ast/sources.mlb
+  local
+    smlfmt/src/parse/sources.mlb
+  in
+    structure SMLFmtParser = Parser
+  end
+  smlfmt/src/parse-mlb/sources.mlb
+  Parser.sml
+in
+  structure Parser
+  structure MLBAst
+  structure CommandLineArgs
+  structure FilePath
+  structure Source
+  structure Ast
+end

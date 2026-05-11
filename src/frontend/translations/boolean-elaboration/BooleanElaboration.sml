@@ -545,73 +545,10 @@ struct
         | R.FunDec fd => A.FunDec (conv_fundec fd)
         | R.TopExp {id, exp} => A.TopExp {id = id, exp = conv_exp exp}
 
-      fun conv_sml_ast (R.SmlAst {id, topdecs}) =
-        A.SmlAst {id = id, topdecs = Seq.map conv_topdec topdecs}
+      fun conv_topdecs (R.Program {id, topdecs}) =
+        A.Program {id = id, topdecs = Seq.map conv_topdec topdecs}
 
-
-      (* ===== MLB ===== *)
-
-      fun conv_basexp basexp =
-        case basexp of
-          R.Mlb.Ident {id, name} => A.Mlb.Ident {id = id, name = name}
-        | R.Mlb.LetInEnd {id, basdec, basexp} =>
-            A.Mlb.LetInEnd
-              { id = id
-              , basdec = conv_basdec basdec
-              , basexp = conv_basexp basexp
-              }
-        | R.Mlb.BasEnd {id, basdec} =>
-            A.Mlb.BasEnd {id = id, basdec = conv_basdec basdec}
-
-      and conv_basdec basdec =
-        case basdec of
-          R.Mlb.DecEmpty => A.Mlb.DecEmpty
-        | R.Mlb.DecMultiple {id, elems} =>
-            A.Mlb.DecMultiple {id = id, elems = Seq.map conv_basdec elems}
-        | R.Mlb.DecRef {id, name} => A.Mlb.DecRef {id = id, name = name}
-        | R.Mlb.DecSml {id, sml} =>
-            A.Mlb.DecSml {id = id, sml = conv_sml_ast sml}
-        | R.Mlb.DecBasis {id, elems} =>
-            A.Mlb.DecBasis
-              { id = id
-              , elems =
-                  Seq.map
-                    (fn {name, basexp} =>
-                       {name = name, basexp = conv_basexp basexp}) elems
-              }
-        | R.Mlb.DecLocalInEnd {id, basdec1, basdec2} =>
-            A.Mlb.DecLocalInEnd
-              { id = id
-              , basdec1 = conv_basdec basdec1
-              , basdec2 = conv_basdec basdec2
-              }
-        | R.Mlb.DecOpen {id, elems} => A.Mlb.DecOpen {id = id, elems = elems}
-        | R.Mlb.DecStructure {id, elems} =>
-            A.Mlb.DecStructure {id = id, elems = elems}
-        | R.Mlb.DecSignature {id, elems} =>
-            A.Mlb.DecSignature {id = id, elems = elems}
-        | R.Mlb.DecFunctor {id, elems} =>
-            A.Mlb.DecFunctor {id = id, elems = elems}
-        | R.Mlb.DecAnn {id, annotations, basdec} =>
-            A.Mlb.DecAnn
-              {id = id, annotations = annotations, basdec = conv_basdec basdec}
-        | R.Mlb.DecUnderscorePrim id => A.Mlb.DecUnderscorePrim id
-
-
-      (* ===== Entry point ===== *)
-
-      val result =
-        case input of
-          R.Sml sml => A.Sml (conv_sml_ast sml)
-        | R.Mlb (R.Program {bases, main}) =>
-            A.Mlb (A.Program
-              { bases =
-                  Seq.map
-                    (fn {name, id, basdec} =>
-                       {name = name, id = id, basdec = conv_basdec basdec})
-                    bases
-              , main = conv_basdec main
-              })
+      val result = conv_topdecs input
     in
       (result, lookup)
     end

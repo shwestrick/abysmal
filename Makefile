@@ -6,7 +6,9 @@ SOURCES = \
   src/util/NodeID.sml \
   src/util/UniqueName.sml \
   src/util/sources.mlb \
+  src/provenance/sources.mlb \
   src/provenance/ProvenanceEvent.sml \
+  src/provenance/Provenance.sml \
   src/frontend/irs/source/SourceAst.sml \
   src/frontend/irs/source/SourceAstToJson.sml \
   src/frontend/irs/after-debasification/AfterDebasificationToJson.sml \

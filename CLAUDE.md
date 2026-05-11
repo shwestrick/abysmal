@@ -58,6 +58,25 @@ fun synth (origin: NodeID.t) (why: string) : NodeID.t =
 `emit` is the single point of contact with `prov_entries` — do not
 prepend to the ref directly anywhere else in the pass.
 
+## Translations
+
+Every translation pass (except for `to-source/`, which is special)
+should begin with `I` (input) and `O` (output) structure definitions,
+defining the input and output IRs, and a corresponding signature.
+
+structure BooleanElaboration:
+sig
+  val translate:
+    AfterRecordUnification.t -> AfterBooleanElaboration.t * Provenance.t
+end =
+struct
+  structure I = AfterRecordUnification
+  structure O = AfterBooleanElaboration
+
+  fun translate (input: I.t) : O.t * Provenance.t =
+  ...
+end
+
 ## State threading style
 
 Use explicit parameter/return threading for state that affects the

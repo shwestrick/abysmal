@@ -1,0 +1,10 @@
+local
+  $(SML_LIB)/basis/basis.mlb
+  ../frontend/smlfmt/src/base/sources.mlb
+  ../util/sources.mlb
+  ProvenanceEvent.sml
+  Provenance.sml
+in
+  structure ProvenanceEvent
+  structure Provenance
+end

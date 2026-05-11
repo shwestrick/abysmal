@@ -19,7 +19,7 @@ local
     structure NodeID
     structure UniqueName
   end
-  ../provenance/ProvenanceEvent.sml
+  ../provenance/sources.mlb
   irs/source/SourceAst.sml
   irs/after-record-unification/AfterRecordUnification.sml
   irs/after-boolean-elaboration/AfterBooleanElaboration.sml
@@ -36,6 +36,7 @@ local
   translations/debasification/Debasification.sml
 in
   structure ProvenanceEvent
+  structure Provenance
   structure SourceAst
   structure AfterRecordUnification
   structure AfterBooleanElaboration

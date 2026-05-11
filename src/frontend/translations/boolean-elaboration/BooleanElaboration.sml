@@ -1,14 +1,13 @@
 structure BooleanElaboration:
 sig
   val translate: AfterRecordUnification.t
-                 -> AfterBooleanElaboration.t * (NodeID.t -> ProvenanceEvent.t)
+                 -> AfterBooleanElaboration.t * Provenance.t
 end =
 struct
+  structure I = AfterRecordUnification
+  structure O = AfterBooleanElaboration
 
-  structure R = AfterRecordUnification
-  structure A = AfterBooleanElaboration
-
-  fun translate (input: R.t) : A.t * (NodeID.t -> ProvenanceEvent.t) =
+  fun translate (input: I.t) : O.t * Provenance.t =
     let
       val prov_entries: (NodeID.t * ProvenanceEvent.t) list ref = ref []
 
@@ -35,24 +34,24 @@ struct
       (* Helpers for the synthesized nodes used in boolean elaboration. *)
 
       fun true_pat origin =
-        A.Pat.Ident
+        O.Pat.Ident
           { id = synth origin "boolean true arm"
           , has_op = false
           , name = Seq.% ["true"]
           }
 
       fun wild_pat origin =
-        A.Pat.Wild (synth origin "boolean wildcard arm")
+        O.Pat.Wild (synth origin "boolean wildcard arm")
 
       fun true_exp origin =
-        A.Exp.Ident
+        O.Exp.Ident
           { id = synth origin "boolean true value"
           , has_op = false
           , name = Seq.% ["true"]
           }
 
       fun false_exp origin =
-        A.Exp.Ident
+        O.Exp.Ident
           { id = synth origin "boolean false value"
           , has_op = false
           , name = Seq.% ["false"]
@@ -63,58 +62,58 @@ struct
 
       fun conv_ty ty =
         case ty of
-          R.Ty.Var {id, name} => A.Ty.Var {id = id, name = name}
+          I.Ty.Var {id, name} => O.Ty.Var {id = id, name = name}
 
-        | R.Ty.Record {id, elems} =>
-            A.Ty.Record
+        | I.Ty.Record {id, elems} =>
+            O.Ty.Record
               { id = id
               , elems =
                   Seq.map (fn {lab, ty} => {lab = lab, ty = conv_ty ty}) elems
               }
 
-        | R.Ty.Con {id, args, name} =>
-            A.Ty.Con {id = id, args = Seq.map conv_ty args, name = name}
+        | I.Ty.Con {id, args, name} =>
+            O.Ty.Con {id = id, args = Seq.map conv_ty args, name = name}
 
-        | R.Ty.Arrow {id, from, to} =>
-            A.Ty.Arrow {id = id, from = conv_ty from, to = conv_ty to}
+        | I.Ty.Arrow {id, from, to} =>
+            O.Ty.Arrow {id = id, from = conv_ty from, to = conv_ty to}
 
 
       (* ===== Patterns ===== *)
 
       fun conv_patrow patrow =
         case patrow of
-          R.Pat.DotDotDot id => A.Pat.DotDotDot id
-        | R.Pat.LabEqPat {id, lab, pat} =>
-            A.Pat.LabEqPat {id = id, lab = lab, pat = conv_pat pat}
+          I.Pat.DotDotDot id => O.Pat.DotDotDot id
+        | I.Pat.LabEqPat {id, lab, pat} =>
+            O.Pat.LabEqPat {id = id, lab = lab, pat = conv_pat pat}
 
       and conv_pat pat =
         case pat of
-          R.Pat.Wild id => A.Pat.Wild id
-        | R.Pat.Const {id, value} => A.Pat.Const {id = id, value = value}
-        | R.Pat.Ident {id, has_op, name} =>
-            A.Pat.Ident {id = id, has_op = has_op, name = name}
-        | R.Pat.List {id, elems} =>
-            A.Pat.List {id = id, elems = Seq.map conv_pat elems}
-        | R.Pat.Record {id, elems} =>
-            A.Pat.Record {id = id, elems = Seq.map conv_patrow elems}
-        | R.Pat.Con {id, has_op, name, atpat} =>
-            A.Pat.Con
+          I.Pat.Wild id => O.Pat.Wild id
+        | I.Pat.Const {id, value} => O.Pat.Const {id = id, value = value}
+        | I.Pat.Ident {id, has_op, name} =>
+            O.Pat.Ident {id = id, has_op = has_op, name = name}
+        | I.Pat.List {id, elems} =>
+            O.Pat.List {id = id, elems = Seq.map conv_pat elems}
+        | I.Pat.Record {id, elems} =>
+            O.Pat.Record {id = id, elems = Seq.map conv_patrow elems}
+        | I.Pat.Con {id, has_op, name, atpat} =>
+            O.Pat.Con
               {id = id, has_op = has_op, name = name, atpat = conv_pat atpat}
-        | R.Pat.Infix {id, left, opr, right} =>
-            A.Pat.Infix
+        | I.Pat.Infix {id, left, opr, right} =>
+            O.Pat.Infix
               {id = id, left = conv_pat left, opr = opr, right = conv_pat right}
-        | R.Pat.Typed {id, pat, ty} =>
-            A.Pat.Typed {id = id, pat = conv_pat pat, ty = conv_ty ty}
-        | R.Pat.Layered {id, has_op, name, ty, pat} =>
-            A.Pat.Layered
+        | I.Pat.Typed {id, pat, ty} =>
+            O.Pat.Typed {id = id, pat = conv_pat pat, ty = conv_ty ty}
+        | I.Pat.Layered {id, has_op, name, ty, pat} =>
+            O.Pat.Layered
               { id = id
               , has_op = has_op
               , name = name
               , ty = Option.map conv_ty ty
               , pat = conv_pat pat
               }
-        | R.Pat.Or {id, elems} =>
-            A.Pat.Or {id = id, elems = Seq.map conv_pat elems}
+        | I.Pat.Or {id, elems} =>
+            O.Pat.Or {id = id, elems = Seq.map conv_pat elems}
 
 
       (* ===== Expressions and declarations ===== *)
@@ -142,38 +141,38 @@ struct
 
       fun conv_exbind exbind =
         case exbind of
-          R.Exp.ExnNew {id, has_op, name, arg} =>
-            A.Exp.ExnNew
+          I.Exp.ExnNew {id, has_op, name, arg} =>
+            O.Exp.ExnNew
               { id = id
               , has_op = has_op
               , name = name
               , arg = Option.map conv_ty arg
               }
-        | R.Exp.ExnReplicate {id, has_op, left_name, right_name} =>
-            A.Exp.ExnReplicate
+        | I.Exp.ExnReplicate {id, has_op, left_name, right_name} =>
+            O.Exp.ExnReplicate
               { id = id
               , has_op = has_op
               , left_name = left_name
               , right_name = right_name
               }
 
-      fun conv_row_exp (R.Exp.RecordRow {id, lab, exp}) =
-        A.Exp.RecordRow {id = id, lab = lab, exp = conv_exp exp}
+      fun conv_row_exp (I.Exp.RecordRow {id, lab, exp}) =
+        O.Exp.RecordRow {id = id, lab = lab, exp = conv_exp exp}
 
       and conv_fname_args fname_args =
         case fname_args of
-          R.Exp.PrefixedFun {id, has_op, name, args} =>
-            A.Exp.PrefixedFun
+          I.Exp.PrefixedFun {id, has_op, name, args} =>
+            O.Exp.PrefixedFun
               { id = id
               , has_op = has_op
               , name = name
               , args = Seq.map conv_pat args
               }
-        | R.Exp.InfixedFun {id, larg, name, rarg} =>
-            A.Exp.InfixedFun
+        | I.Exp.InfixedFun {id, larg, name, rarg} =>
+            O.Exp.InfixedFun
               {id = id, larg = conv_pat larg, name = name, rarg = conv_pat rarg}
-        | R.Exp.CurriedInfixedFun {id, larg, name, rarg, args} =>
-            A.Exp.CurriedInfixedFun
+        | I.Exp.CurriedInfixedFun {id, larg, name, rarg, args} =>
+            O.Exp.CurriedInfixedFun
               { id = id
               , larg = conv_pat larg
               , name = name
@@ -195,38 +194,38 @@ struct
 
       and conv_exp exp =
         case exp of
-          R.Exp.Const {id, value} => A.Exp.Const {id = id, value = value}
+          I.Exp.Const {id, value} => O.Exp.Const {id = id, value = value}
 
-        | R.Exp.Ident {id, has_op, name} =>
-            A.Exp.Ident {id = id, has_op = has_op, name = name}
+        | I.Exp.Ident {id, has_op, name} =>
+            O.Exp.Ident {id = id, has_op = has_op, name = name}
 
-        | R.Exp.Record {id, elems} =>
-            A.Exp.Record {id = id, elems = Seq.map conv_row_exp elems}
+        | I.Exp.Record {id, elems} =>
+            O.Exp.Record {id = id, elems = Seq.map conv_row_exp elems}
 
-        | R.Exp.Select {id, label} => A.Exp.Select {id = id, label = label}
+        | I.Exp.Select {id, label} => O.Exp.Select {id = id, label = label}
 
-        | R.Exp.List {id, elems} =>
-            A.Exp.List {id = id, elems = Seq.map conv_exp elems}
+        | I.Exp.List {id, elems} =>
+            O.Exp.List {id = id, elems = Seq.map conv_exp elems}
 
-        | R.Exp.Sequence {id, elems} =>
-            A.Exp.Sequence {id = id, elems = Seq.map conv_exp elems}
+        | I.Exp.Sequence {id, elems} =>
+            O.Exp.Sequence {id = id, elems = Seq.map conv_exp elems}
 
-        | R.Exp.LetInEnd {id, dec, exps} =>
-            A.Exp.LetInEnd
+        | I.Exp.LetInEnd {id, dec, exps} =>
+            O.Exp.LetInEnd
               {id = id, dec = conv_dec dec, exps = Seq.map conv_exp exps}
 
-        | R.Exp.App {id, left, right} =>
-            A.Exp.App {id = id, left = conv_exp left, right = conv_exp right}
+        | I.Exp.App {id, left, right} =>
+            O.Exp.App {id = id, left = conv_exp left, right = conv_exp right}
 
-        | R.Exp.Infix {id, left, opr, right} =>
-            A.Exp.Infix
+        | I.Exp.Infix {id, left, opr, right} =>
+            O.Exp.Infix
               {id = id, left = conv_exp left, opr = opr, right = conv_exp right}
 
-        | R.Exp.Typed {id, exp, ty} =>
-            A.Exp.Typed {id = id, exp = conv_exp exp, ty = conv_ty ty}
+        | I.Exp.Typed {id, exp, ty} =>
+            O.Exp.Typed {id = id, exp = conv_exp exp, ty = conv_ty ty}
 
-        | R.Exp.Andalso {id, left, right} =>
-            A.Exp.Case
+        | I.Exp.Andalso {id, left, right} =>
+            O.Exp.Case
               { id = id
               , exp = conv_exp left
               , elems = Seq.%
@@ -235,8 +234,8 @@ struct
                   ]
               }
 
-        | R.Exp.Orelse {id, left, right} =>
-            A.Exp.Case
+        | I.Exp.Orelse {id, left, right} =>
+            O.Exp.Case
               { id = id
               , exp = conv_exp left
               , elems = Seq.%
@@ -245,8 +244,8 @@ struct
                   ]
               }
 
-        | R.Exp.Handle {id, exp, elems} =>
-            A.Exp.Handle
+        | I.Exp.Handle {id, exp, elems} =>
+            O.Exp.Handle
               { id = id
               , exp = conv_exp exp
               , elems =
@@ -255,10 +254,10 @@ struct
                     elems
               }
 
-        | R.Exp.Raise {id, exp} => A.Exp.Raise {id = id, exp = conv_exp exp}
+        | I.Exp.Raise {id, exp} => O.Exp.Raise {id = id, exp = conv_exp exp}
 
-        | R.Exp.IfThenElse {id, exp1, exp2, exp3} =>
-            A.Exp.Case
+        | I.Exp.IfThenElse {id, exp1, exp2, exp3} =>
+            O.Exp.Case
               { id = id
               , exp = conv_exp exp1
               , elems = Seq.%
@@ -267,11 +266,11 @@ struct
                   ]
               }
 
-        | R.Exp.While {id, exp1, exp2} =>
-            A.Exp.While {id = id, exp1 = conv_exp exp1, exp2 = conv_exp exp2}
+        | I.Exp.While {id, exp1, exp2} =>
+            O.Exp.While {id = id, exp1 = conv_exp exp1, exp2 = conv_exp exp2}
 
-        | R.Exp.Case {id, exp, elems} =>
-            A.Exp.Case
+        | I.Exp.Case {id, exp, elems} =>
+            O.Exp.Case
               { id = id
               , exp = conv_exp exp
               , elems =
@@ -280,8 +279,8 @@ struct
                     elems
               }
 
-        | R.Exp.Fn {id, elems} =>
-            A.Exp.Fn
+        | I.Exp.Fn {id, elems} =>
+            O.Exp.Fn
               { id = id
               , elems =
                   Seq.map
@@ -289,16 +288,16 @@ struct
                     elems
               }
 
-        | R.Exp.MLtonSpecific {id, directive, contents} =>
-            A.Exp.MLtonSpecific
+        | I.Exp.MLtonSpecific {id, directive, contents} =>
+            O.Exp.MLtonSpecific
               {id = id, directive = directive, contents = contents}
 
       and conv_dec dec =
         case dec of
-          R.Exp.DecEmpty => A.Exp.DecEmpty
+          I.Exp.DecEmpty => O.Exp.DecEmpty
 
-        | R.Exp.DecVal {id, tyvars, elems} =>
-            A.Exp.DecVal
+        | I.Exp.DecVal {id, tyvars, elems} =>
+            O.Exp.DecVal
               { id = id
               , tyvars = tyvars
               , elems =
@@ -308,65 +307,65 @@ struct
                     elems
               }
 
-        | R.Exp.DecFun {id, tyvars, fvalbind} =>
-            A.Exp.DecFun
+        | I.Exp.DecFun {id, tyvars, fvalbind} =>
+            O.Exp.DecFun
               {id = id, tyvars = tyvars, fvalbind = conv_fvalbind fvalbind}
 
-        | R.Exp.DecType {id, typbind} =>
-            A.Exp.DecType {id = id, typbind = conv_typbind typbind}
+        | I.Exp.DecType {id, typbind} =>
+            O.Exp.DecType {id = id, typbind = conv_typbind typbind}
 
-        | R.Exp.DecDatatype {id, datbind, withtypee} =>
-            A.Exp.DecDatatype
+        | I.Exp.DecDatatype {id, datbind, withtypee} =>
+            O.Exp.DecDatatype
               { id = id
               , datbind = conv_datbind datbind
               , withtypee = Option.map conv_typbind withtypee
               }
 
-        | R.Exp.DecReplicateDatatype {id, left_name, right_name} =>
-            A.Exp.DecReplicateDatatype
+        | I.Exp.DecReplicateDatatype {id, left_name, right_name} =>
+            O.Exp.DecReplicateDatatype
               {id = id, left_name = left_name, right_name = right_name}
 
-        | R.Exp.DecAbstype {id, datbind, withtypee, dec} =>
-            A.Exp.DecAbstype
+        | I.Exp.DecAbstype {id, datbind, withtypee, dec} =>
+            O.Exp.DecAbstype
               { id = id
               , datbind = conv_datbind datbind
               , withtypee = Option.map conv_typbind withtypee
               , dec = conv_dec dec
               }
 
-        | R.Exp.DecException {id, elems} =>
-            A.Exp.DecException {id = id, elems = Seq.map conv_exbind elems}
+        | I.Exp.DecException {id, elems} =>
+            O.Exp.DecException {id = id, elems = Seq.map conv_exbind elems}
 
-        | R.Exp.DecLocal {id, left_dec, right_dec} =>
-            A.Exp.DecLocal
+        | I.Exp.DecLocal {id, left_dec, right_dec} =>
+            O.Exp.DecLocal
               { id = id
               , left_dec = conv_dec left_dec
               , right_dec = conv_dec right_dec
               }
 
-        | R.Exp.DecOpen {id, elems} => A.Exp.DecOpen {id = id, elems = elems}
+        | I.Exp.DecOpen {id, elems} => O.Exp.DecOpen {id = id, elems = elems}
 
-        | R.Exp.DecMultiple {id, elems} =>
-            A.Exp.DecMultiple {id = id, elems = Seq.map conv_dec elems}
+        | I.Exp.DecMultiple {id, elems} =>
+            O.Exp.DecMultiple {id = id, elems = Seq.map conv_dec elems}
 
-        | R.Exp.DecInfix {id, precedence, elems} =>
-            A.Exp.DecInfix {id = id, precedence = precedence, elems = elems}
+        | I.Exp.DecInfix {id, precedence, elems} =>
+            O.Exp.DecInfix {id = id, precedence = precedence, elems = elems}
 
-        | R.Exp.DecInfixr {id, precedence, elems} =>
-            A.Exp.DecInfixr {id = id, precedence = precedence, elems = elems}
+        | I.Exp.DecInfixr {id, precedence, elems} =>
+            O.Exp.DecInfixr {id = id, precedence = precedence, elems = elems}
 
-        | R.Exp.DecNonfix {id, elems} =>
-            A.Exp.DecNonfix {id = id, elems = elems}
+        | I.Exp.DecNonfix {id, elems} =>
+            O.Exp.DecNonfix {id = id, elems = elems}
 
 
       (* ===== Signatures ===== *)
 
       fun conv_sigexp sigexp =
         case sigexp of
-          R.Sig.Ident {id, name} => A.Sig.Ident {id = id, name = name}
-        | R.Sig.Spec {id, spec} => A.Sig.Spec {id = id, spec = conv_spec spec}
-        | R.Sig.WhereType {id, sigexp, elems} =>
-            A.Sig.WhereType
+          I.Sig.Ident {id, name} => O.Sig.Ident {id = id, name = name}
+        | I.Sig.Spec {id, spec} => O.Sig.Spec {id = id, spec = conv_spec spec}
+        | I.Sig.WhereType {id, sigexp, elems} =>
+            O.Sig.WhereType
               { id = id
               , sigexp = conv_sigexp sigexp
               , elems =
@@ -377,20 +376,20 @@ struct
 
       and conv_spec spec =
         case spec of
-          R.Sig.EmptySpec => A.Sig.EmptySpec
-        | R.Sig.Val {id, elems} =>
-            A.Sig.Val
+          I.Sig.EmptySpec => O.Sig.EmptySpec
+        | I.Sig.Val {id, elems} =>
+            O.Sig.Val
               { id = id
               , elems =
                   Seq.map (fn {name, ty} => {name = name, ty = conv_ty ty})
                     elems
               }
-        | R.Sig.Type {id, elems} => A.Sig.Type {id = id, elems = elems}
-        | R.Sig.TypeAbbreviation {id, typbind} =>
-            A.Sig.TypeAbbreviation {id = id, typbind = conv_typbind typbind}
-        | R.Sig.Eqtype {id, elems} => A.Sig.Eqtype {id = id, elems = elems}
-        | R.Sig.Datatype {id, elems} =>
-            A.Sig.Datatype
+        | I.Sig.Type {id, elems} => O.Sig.Type {id = id, elems = elems}
+        | I.Sig.TypeAbbreviation {id, typbind} =>
+            O.Sig.TypeAbbreviation {id = id, typbind = conv_typbind typbind}
+        | I.Sig.Eqtype {id, elems} => O.Sig.Eqtype {id = id, elems = elems}
+        | I.Sig.Datatype {id, elems} =>
+            O.Sig.Datatype
               { id = id
               , elems =
                   Seq.map
@@ -404,38 +403,38 @@ struct
                              elems
                        }) elems
               }
-        | R.Sig.ReplicateDatatype {id, left_id, right_id} =>
-            A.Sig.ReplicateDatatype
+        | I.Sig.ReplicateDatatype {id, left_id, right_id} =>
+            O.Sig.ReplicateDatatype
               {id = id, left_id = left_id, right_id = right_id}
-        | R.Sig.Exception {id, elems} =>
-            A.Sig.Exception
+        | I.Sig.Exception {id, elems} =>
+            O.Sig.Exception
               { id = id
               , elems =
                   Seq.map
                     (fn {name, arg} =>
                        {name = name, arg = Option.map conv_ty arg}) elems
               }
-        | R.Sig.Structure {id, elems} =>
-            A.Sig.Structure
+        | I.Sig.Structure {id, elems} =>
+            O.Sig.Structure
               { id = id
               , elems =
                   Seq.map
                     (fn {name, sigexp} =>
                        {name = name, sigexp = conv_sigexp sigexp}) elems
               }
-        | R.Sig.Include {id, sigexp} =>
-            A.Sig.Include {id = id, sigexp = conv_sigexp sigexp}
-        | R.Sig.IncludeIds {id, names} =>
-            A.Sig.IncludeIds {id = id, names = names}
-        | R.Sig.SharingType {id, spec, elems} =>
-            A.Sig.SharingType {id = id, spec = conv_spec spec, elems = elems}
-        | R.Sig.Sharing {id, spec, elems} =>
-            A.Sig.Sharing {id = id, spec = conv_spec spec, elems = elems}
-        | R.Sig.Multiple {id, elems} =>
-            A.Sig.Multiple {id = id, elems = Seq.map conv_spec elems}
+        | I.Sig.Include {id, sigexp} =>
+            O.Sig.Include {id = id, sigexp = conv_sigexp sigexp}
+        | I.Sig.IncludeIds {id, names} =>
+            O.Sig.IncludeIds {id = id, names = names}
+        | I.Sig.SharingType {id, spec, elems} =>
+            O.Sig.SharingType {id = id, spec = conv_spec spec, elems = elems}
+        | I.Sig.Sharing {id, spec, elems} =>
+            O.Sig.Sharing {id = id, spec = conv_spec spec, elems = elems}
+        | I.Sig.Multiple {id, elems} =>
+            O.Sig.Multiple {id = id, elems = Seq.map conv_spec elems}
 
-      fun conv_sigdec (R.Sig.Signature {id, elems}) =
-        A.Sig.Signature
+      fun conv_sigdec (I.Sig.Signature {id, elems}) =
+        O.Sig.Signature
           { id = id
           , elems =
               Seq.map
@@ -448,24 +447,24 @@ struct
 
       fun conv_strexp strexp =
         case strexp of
-          R.Str.Ident {id, name} => A.Str.Ident {id = id, name = name}
-        | R.Str.Struct {id, strdec} =>
-            A.Str.Struct {id = id, strdec = conv_strdec strdec}
-        | R.Str.Constraint {id, strexp, is_opaque, sigexp} =>
-            A.Str.Constraint
+          I.Str.Ident {id, name} => O.Str.Ident {id = id, name = name}
+        | I.Str.Struct {id, strdec} =>
+            O.Str.Struct {id = id, strdec = conv_strdec strdec}
+        | I.Str.Constraint {id, strexp, is_opaque, sigexp} =>
+            O.Str.Constraint
               { id = id
               , strexp = conv_strexp strexp
               , is_opaque = is_opaque
               , sigexp = conv_sigexp sigexp
               }
-        | R.Str.FunAppExp {id, funid, strexp} =>
-            A.Str.FunAppExp
+        | I.Str.FunAppExp {id, funid, strexp} =>
+            O.Str.FunAppExp
               {id = id, funid = funid, strexp = conv_strexp strexp}
-        | R.Str.FunAppDec {id, funid, strdec} =>
-            A.Str.FunAppDec
+        | I.Str.FunAppDec {id, funid, strdec} =>
+            O.Str.FunAppDec
               {id = id, funid = funid, strdec = conv_strdec strdec}
-        | R.Str.LetInEnd {id, strdec, strexp} =>
-            A.Str.LetInEnd
+        | I.Str.LetInEnd {id, strdec, strexp} =>
+            O.Str.LetInEnd
               { id = id
               , strdec = conv_strdec strdec
               , strexp = conv_strexp strexp
@@ -473,10 +472,10 @@ struct
 
       and conv_strdec strdec =
         case strdec of
-          R.Str.DecEmpty => A.Str.DecEmpty
-        | R.Str.DecCore dec => A.Str.DecCore (conv_dec dec)
-        | R.Str.DecStructure {id, elems} =>
-            A.Str.DecStructure
+          I.Str.DecEmpty => O.Str.DecEmpty
+        | I.Str.DecCore dec => O.Str.DecCore (conv_dec dec)
+        | I.Str.DecStructure {id, elems} =>
+            O.Str.DecStructure
               { id = id
               , elems =
                   Seq.map
@@ -491,16 +490,16 @@ struct
                        , strexp = conv_strexp strexp
                        }) elems
               }
-        | R.Str.DecMultiple {id, elems} =>
-            A.Str.DecMultiple {id = id, elems = Seq.map conv_strdec elems}
-        | R.Str.DecLocalInEnd {id, strdec1, strdec2} =>
-            A.Str.DecLocalInEnd
+        | I.Str.DecMultiple {id, elems} =>
+            O.Str.DecMultiple {id = id, elems = Seq.map conv_strdec elems}
+        | I.Str.DecLocalInEnd {id, strdec1, strdec2} =>
+            O.Str.DecLocalInEnd
               { id = id
               , strdec1 = conv_strdec strdec1
               , strdec2 = conv_strdec strdec2
               }
-        | R.Str.MLtonOverload {id, prec, name, ty, elems} =>
-            A.Str.MLtonOverload
+        | I.Str.MLtonOverload {id, prec, name, ty, elems} =>
+            O.Str.MLtonOverload
               { id = id
               , prec = prec
               , name = name
@@ -513,13 +512,13 @@ struct
 
       fun conv_funarg funarg =
         case funarg of
-          R.Fun.ArgIdent {id, name, sigexp} =>
-            A.Fun.ArgIdent {id = id, name = name, sigexp = conv_sigexp sigexp}
-        | R.Fun.ArgSpec {id, spec} =>
-            A.Fun.ArgSpec {id = id, spec = conv_spec spec}
+          I.Fun.ArgIdent {id, name, sigexp} =>
+            O.Fun.ArgIdent {id = id, name = name, sigexp = conv_sigexp sigexp}
+        | I.Fun.ArgSpec {id, spec} =>
+            O.Fun.ArgSpec {id = id, spec = conv_spec spec}
 
-      fun conv_fundec (R.Fun.DecFunctor {id, elems}) =
-        A.Fun.DecFunctor
+      fun conv_fundec (I.Fun.DecFunctor {id, elems}) =
+        O.Fun.DecFunctor
           { id = id
           , elems =
               Seq.map
@@ -540,13 +539,13 @@ struct
 
       fun conv_topdec topdec =
         case topdec of
-          R.SigDec sd => A.SigDec (conv_sigdec sd)
-        | R.StrDec sd => A.StrDec (conv_strdec sd)
-        | R.FunDec fd => A.FunDec (conv_fundec fd)
-        | R.TopExp {id, exp} => A.TopExp {id = id, exp = conv_exp exp}
+          I.SigDec sd => O.SigDec (conv_sigdec sd)
+        | I.StrDec sd => O.StrDec (conv_strdec sd)
+        | I.FunDec fd => O.FunDec (conv_fundec fd)
+        | I.TopExp {id, exp} => O.TopExp {id = id, exp = conv_exp exp}
 
-      fun conv_topdecs (R.Program {id, topdecs}) =
-        A.Program {id = id, topdecs = Seq.map conv_topdec topdecs}
+      fun conv_topdecs (I.Program {id, topdecs}) =
+        O.Program {id = id, topdecs = Seq.map conv_topdec topdecs}
 
       val result = conv_topdecs input
     in

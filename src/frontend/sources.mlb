@@ -25,6 +25,7 @@ local
   irs/after-boolean-elaboration/AfterBooleanElaboration.sml
   irs/after-infix-elaboration/AfterInfixElaboration.sml
   irs/after-fun-elaboration/AfterFunElaboration.sml
+  irs/after-fn-elaboration/AfterFnElaboration.sml
   irs/after-debasification/AfterDebasification.sml
   irs/source/SourceAstToJson.sml
   irs/after-debasification/AfterDebasificationToJson.sml
@@ -35,6 +36,7 @@ local
   translations/boolean-elaboration/BooleanElaboration.sml
   translations/infix-elaboration/InfixElaboration.sml
   translations/fun-elaboration/FunElaboration.sml
+  translations/fn-elaboration/FnElaboration.sml
   translations/debasification/Debasification.sml
 in
   structure ProvenanceEvent
@@ -44,6 +46,7 @@ in
   structure AfterBooleanElaboration
   structure AfterInfixElaboration
   structure AfterFunElaboration
+  structure AfterFnElaboration
   structure AfterDebasification
   structure AfterDebasificationToJson
   structure Parser
@@ -53,6 +56,7 @@ in
   structure BooleanElaboration
   structure InfixElaboration
   structure FunElaboration
+  structure FnElaboration
   structure Debasification
   structure SourceAstToJson
   structure MLBAst

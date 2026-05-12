@@ -67,3 +67,4 @@ val (ru_ast, _) = RecordUnification.translate debas_ast
 val (be_ast, _) = BooleanElaboration.translate ru_ast
 val (ie_ast, _) = InfixElaboration.translate be_ast
 val (fe_ast, _) = FunElaboration.translate ie_ast
+val (fne_ast, _) = FnElaboration.translate fe_ast

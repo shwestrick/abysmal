@@ -224,8 +224,8 @@ struct
               (List.map (fn name => ns_to_alias_strdecs id (find_ns name))
                  (Seq.toList elems))
 
-        | I.Mlb.DecBasis _ =>
-            raise Fail "Debasification: DecBasis not supported"
+        | I.Mlb.DecBasis {id, elems} =>
+            List.map topdec_as_strdec (conv_decbasis id elems)
 
       (** conv_filter: translate a basdec to (topdecs, namespace).
         * Used for the exported portion of a basis or the `in` part of local.
@@ -344,8 +344,8 @@ struct
                    (acc_tds @ List.map O.StrDec strdecs, merge_ns acc_ns new_ns)
                  end) ([], empty_ns) (Seq.toList elems)
 
-        | I.Mlb.DecBasis _ =>
-            raise Fail "Debasification: DecBasis not supported"
+        | I.Mlb.DecBasis {id, elems} =>
+            (conv_decbasis id elems, empty_ns)
 
       (** Like conv_filter but returns strdecs instead of topdecs.
         * Used for basdec2 of DecLocalInEnd (which must be inside a strdec). *)
@@ -355,10 +355,47 @@ struct
         in (List.map topdec_as_strdec tds, ns)
         end
 
+      (** Evaluate a basexp to (topdecs, namespace).
+        * mat_bn is the materialization basis name used for unique-name generation. *)
+      and conv_basexp (mat_bn: string) (basexp: I.Mlb.basexp) :
+        O.topdec list * namespace =
+        case basexp of
+          I.Mlb.Ident {name, ...} => ([], find_ns name)
+
+        | I.Mlb.BasEnd {basdec, ...} => conv_filter mat_bn basdec
+
+        | I.Mlb.LetInEnd {id, basdec, basexp = bexp} =>
+            let
+              val inner_sds = conv_inner mat_bn basdec
+              val (bexp_tds, ns) = conv_basexp mat_bn bexp
+              val local_td = O.StrDec (O.Str.DecLocalInEnd
+                { id = id
+                , strdec1 = multi_strdec (synth id "basexp let") inner_sds
+                , strdec2 = multi_strdec (synth id "basexp in")
+                    (List.map topdec_as_strdec bexp_tds)
+                })
+            in
+              ([local_td], ns)
+            end
+
+      (** Process a DecBasis node; returns the materialization topdecs and
+        * registers each declared name in basis_ns_map for subsequent lookups. *)
+      and conv_decbasis (id: NodeID.t)
+        (elems: {name: string, basexp: I.Mlb.basexp} Seq.t) : O.topdec list =
+        List.concat (Seq.toList (Seq.map
+          (fn {name, basexp} =>
+             let
+               val mat_bn = name ^ "__" ^ NodeID.toString id
+               val (tds, ns) = conv_basexp mat_bn basexp
+             in
+               register_ns name ns;
+               tds
+             end) elems))
+
       (** Translate the `main` basdec: expand DecRef by aliasing (not re-exporting),
         * since the unique names are already global and just need to be brought into
         * local scope under their public names. *)
-      fun conv_main (basdec: I.Mlb.basdec) : O.topdec list =
+      and conv_main (basdec: I.Mlb.basdec) : O.topdec list =
         case basdec of
           I.Mlb.DecEmpty => []
 
@@ -409,8 +446,8 @@ struct
                  (fn name =>
                     List.map O.StrDec (ns_to_alias_strdecs id (find_ns name)))
                  (Seq.toList elems))
-        | I.Mlb.DecBasis _ =>
-            raise Fail "Debasification: DecBasis not supported"
+        | I.Mlb.DecBasis {id, elems} =>
+            conv_decbasis id elems
 
       val result_topdecs =
         case input of

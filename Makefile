@@ -18,6 +18,7 @@ SOURCES = \
   src/frontend/irs/after-fun-elaboration/AfterFunElaboration.sml \
   src/frontend/irs/after-fn-elaboration/AfterFnElaboration.sml \
   src/frontend/irs/after-while-elaboration/AfterWhileElaboration.sml \
+  src/frontend/irs/after-sequence-elaboration/AfterSequenceElaboration.sml \
   src/frontend/irs/after-debasification/AfterDebasification.sml \
   src/frontend/translations/to-source/Parser.sml \
   src/frontend/translations/to-source/ToSourceAstSML.sml \
@@ -28,6 +29,7 @@ SOURCES = \
   src/frontend/translations/fun-elaboration/FunElaboration.sml \
   src/frontend/translations/fn-elaboration/FnElaboration.sml \
   src/frontend/translations/while-elaboration/WhileElaboration.sml \
+  src/frontend/translations/sequence-elaboration/SequenceElaboration.sml \
   src/frontend/translations/debasification/Debasification.sml \
   src/frontend/sources.mlb
 

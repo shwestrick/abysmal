@@ -69,3 +69,4 @@ val (ie_ast, _) = InfixElaboration.translate be_ast
 val (fe_ast, _) = FunElaboration.translate ie_ast
 val (fne_ast, _) = FnElaboration.translate fe_ast
 val (we_ast, _) = WhileElaboration.translate fne_ast
+val (se_ast, _) = SequenceElaboration.translate we_ast

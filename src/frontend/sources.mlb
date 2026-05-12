@@ -27,6 +27,7 @@ local
   irs/after-fun-elaboration/AfterFunElaboration.sml
   irs/after-fn-elaboration/AfterFnElaboration.sml
   irs/after-while-elaboration/AfterWhileElaboration.sml
+  irs/after-sequence-elaboration/AfterSequenceElaboration.sml
   irs/after-debasification/AfterDebasification.sml
   irs/source/SourceAstToJson.sml
   irs/after-debasification/AfterDebasificationToJson.sml
@@ -39,6 +40,7 @@ local
   translations/fun-elaboration/FunElaboration.sml
   translations/fn-elaboration/FnElaboration.sml
   translations/while-elaboration/WhileElaboration.sml
+  translations/sequence-elaboration/SequenceElaboration.sml
   translations/debasification/Debasification.sml
 in
   structure ProvenanceEvent
@@ -50,6 +52,7 @@ in
   structure AfterFunElaboration
   structure AfterFnElaboration
   structure AfterWhileElaboration
+  structure AfterSequenceElaboration
   structure AfterDebasification
   structure AfterDebasificationToJson
   structure Parser
@@ -61,6 +64,7 @@ in
   structure FunElaboration
   structure FnElaboration
   structure WhileElaboration
+  structure SequenceElaboration
   structure Debasification
   structure SourceAstToJson
   structure MLBAst

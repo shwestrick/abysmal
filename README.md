@@ -31,6 +31,11 @@ All three desugar into `case` expressions.
 definitions. `left opr right` becomes `opr (left, right)` (as a record).
 `infix`/`infixr`/`nonfix` declarations are dropped.
 
+**Sequence elaboration** — Eliminates expression sequences. `(e1; e2; e3)`
+becomes `let val _ = e1; val _ = e2 in e3 end`. Multi-expression `let` bodies
+are similarly folded into the declaration list. After this pass every `let`
+has exactly one body expression.
+
 **While elaboration** — Eliminates `while` loops. `while e1 do e2` becomes a
 local recursive function `_loop` that checks the condition via `case` and
 calls itself tail-recursively.

@@ -99,6 +99,11 @@ make fmt          # format with smlfmt
 make clean        # remove build/
 ```
 
+## Keeping README in sync
+
+When adding a new pass, add a brief entry to `README.md` under the
+**Passes (in order)** section describing what it eliminates.
+
 ## Keeping the Makefile in sync
 
 The `SOURCES` list in `Makefile` must stay consistent with every `.sml`

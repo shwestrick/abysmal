@@ -24,6 +24,7 @@ local
   irs/after-record-unification/AfterRecordUnification.sml
   irs/after-boolean-elaboration/AfterBooleanElaboration.sml
   irs/after-infix-elaboration/AfterInfixElaboration.sml
+  irs/after-fun-elaboration/AfterFunElaboration.sml
   irs/after-debasification/AfterDebasification.sml
   irs/source/SourceAstToJson.sml
   irs/after-debasification/AfterDebasificationToJson.sml
@@ -33,6 +34,7 @@ local
   translations/record-unification/RecordUnification.sml
   translations/boolean-elaboration/BooleanElaboration.sml
   translations/infix-elaboration/InfixElaboration.sml
+  translations/fun-elaboration/FunElaboration.sml
   translations/debasification/Debasification.sml
 in
   structure ProvenanceEvent
@@ -41,6 +43,7 @@ in
   structure AfterRecordUnification
   structure AfterBooleanElaboration
   structure AfterInfixElaboration
+  structure AfterFunElaboration
   structure AfterDebasification
   structure AfterDebasificationToJson
   structure Parser
@@ -49,6 +52,7 @@ in
   structure RecordUnification
   structure BooleanElaboration
   structure InfixElaboration
+  structure FunElaboration
   structure Debasification
   structure SourceAstToJson
   structure MLBAst

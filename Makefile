@@ -15,6 +15,7 @@ SOURCES = \
   src/frontend/irs/after-record-unification/AfterRecordUnification.sml \
   src/frontend/irs/after-boolean-elaboration/AfterBooleanElaboration.sml \
   src/frontend/irs/after-infix-elaboration/AfterInfixElaboration.sml \
+  src/frontend/irs/after-fun-elaboration/AfterFunElaboration.sml \
   src/frontend/irs/after-debasification/AfterDebasification.sml \
   src/frontend/translations/to-source/Parser.sml \
   src/frontend/translations/to-source/ToSourceAstSML.sml \
@@ -22,6 +23,7 @@ SOURCES = \
   src/frontend/translations/record-unification/RecordUnification.sml \
   src/frontend/translations/boolean-elaboration/BooleanElaboration.sml \
   src/frontend/translations/infix-elaboration/InfixElaboration.sml \
+  src/frontend/translations/fun-elaboration/FunElaboration.sml \
   src/frontend/translations/debasification/Debasification.sml \
   src/frontend/sources.mlb
 

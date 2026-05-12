@@ -31,6 +31,11 @@ All three desugar into `case` expressions.
 definitions. `left opr right` becomes `opr (left, right)` (as a record).
 `infix`/`infixr`/`nonfix` declarations are dropped.
 
+**Fun elaboration** — Eliminates `fun` declarations. Each `fun f args = exp`
+(with `and` bindings) becomes `val rec f = fn ...`. Single-clause functions
+desugar to curried lambdas; multi-clause functions introduce fresh argument
+variables and dispatch with `case`.
+
 **TODO: more to come...**
 
 ## Build

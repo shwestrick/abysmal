@@ -4,7 +4,10 @@
       "Bash(make *)",
       "Bash(build/bin/abysmal *)",
       "Bash(find *)",
-      "Bash(mkdir -p *)"
+      "Bash(mkdir -p *)",
+      "Edit(src/**/*)",
+      "Edit(Makefile)",
+      "Edit(README.md)"
     ]
   }
 }

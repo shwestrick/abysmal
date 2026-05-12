@@ -31,23 +31,23 @@ All three desugar into `case` expressions.
 definitions. `left opr right` becomes `opr (left, right)` (as a record).
 `infix`/`infixr`/`nonfix` declarations are dropped.
 
-**Sequence elaboration** — Eliminates expression sequences. `(e1; e2; e3)`
-becomes `let val _ = e1; val _ = e2 in e3 end`. Multi-expression `let` bodies
-are similarly folded into the declaration list. After this pass every `let`
-has exactly one body expression.
-
-**While elaboration** — Eliminates `while` loops. `while e1 do e2` becomes a
-local recursive function `_loop` that checks the condition via `case` and
-calls itself tail-recursively.
+**Fun elaboration** — Eliminates `fun` declarations. Each `fun f args = exp`
+(with `and` bindings) becomes `val rec f = fn ...`. Single-clause functions
+desugar to curried lambdas; multi-clause functions introduce fresh argument
+variables and dispatch with `case`.
 
 **Fn elaboration** — Eliminates multi-clause `fn`. `fn p1 => e1 | p2 => e2`
 becomes `fn _x => case _x of p1 => e1 | p2 => e2`. Single-clause `fn` is
 unchanged. After this pass every `Fn` node has exactly one clause.
 
-**Fun elaboration** — Eliminates `fun` declarations. Each `fun f args = exp`
-(with `and` bindings) becomes `val rec f = fn ...`. Single-clause functions
-desugar to curried lambdas; multi-clause functions introduce fresh argument
-variables and dispatch with `case`.
+**While elaboration** — Eliminates `while` loops. `while e1 do e2` becomes a
+local recursive function `_loop` that checks the condition via `case` and
+calls itself tail-recursively.
+
+**Sequence elaboration** — Eliminates expression sequences. `(e1; e2; e3)`
+becomes `let val _ = e1; val _ = e2 in e3 end`. Multi-expression `let` bodies
+are similarly folded into the declaration list. After this pass every `let`
+has exactly one body expression.
 
 **TODO: more to come...**
 

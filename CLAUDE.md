@@ -102,7 +102,9 @@ make clean        # remove build/
 ## Keeping README in sync
 
 When adding a new pass, add a brief entry to `README.md` under the
-**Passes (in order)** section describing what it eliminates.
+**Passes (in order)** section describing what it eliminates. Always
+make sure these appear in the correct order, from first to last
+translation!
 
 ## Keeping the Makefile in sync
 

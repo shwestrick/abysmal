@@ -31,6 +31,10 @@ All three desugar into `case` expressions.
 definitions. `left opr right` becomes `opr (left, right)` (as a record).
 `infix`/`infixr`/`nonfix` declarations are dropped.
 
+**While elaboration** — Eliminates `while` loops. `while e1 do e2` becomes a
+local recursive function `_loop` that checks the condition via `case` and
+calls itself tail-recursively.
+
 **Fn elaboration** — Eliminates multi-clause `fn`. `fn p1 => e1 | p2 => e2`
 becomes `fn _x => case _x of p1 => e1 | p2 => e2`. Single-clause `fn` is
 unchanged. After this pass every `Fn` node has exactly one clause.

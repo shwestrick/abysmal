@@ -140,10 +140,16 @@ struct
                   , left = O.Exp.Ident {id = loop_ref_id, name = Seq.% [loop_name]}
                   , right = O.Exp.Record {id = synth id "while loop call unit", elems = Seq.empty ()}
                   }
+              val body_typed =
+                O.Exp.Typed
+                  { id = synth id "while body type annotation"
+                  , exp = conv_exp exp2
+                  , ty = O.Ty.Record {id = synth id "while unit type", elems = Seq.empty ()}
+                  }
               val body_exp =
                 O.Exp.Sequence
                   { id = synth id "while body sequence"
-                  , elems = Seq.% [conv_exp exp2, loop_call ()]
+                  , elems = Seq.% [body_typed, loop_call ()]
                   }
               val case_exp =
                 O.Exp.Case
